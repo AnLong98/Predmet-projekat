@@ -1,0 +1,85 @@
+version: '3.4'
+
+services:
+  antivirus:
+    image: mkodockx/docker-clamav:alpine
+
+  smartenergyusers:
+    image: ${DOCKER_REGISTRY-}smartenergyusers
+    build:
+      context: .
+      dockerfile: SmartEnergyUsers/Dockerfile
+    ports:
+      - "51000:50001"
+      - "44372:80"
+    depends_on:
+      - users-db
+
+  users-db:
+    image: mcr.microsoft.com/mssql/server
+    ports:
+      - "1401:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Your+password123"
+
+  physical-db:
+    image: mcr.microsoft.com/mssql/server
+    ports:
+      - "1402:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Your+password123"
+
+  smartenergyusers-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "smartenergyusers", "-app-port", "80" ]
+    depends_on:
+      - smartenergyusers
+    network_mode: "service:smartenergyusers"
+
+  smartenergyphysical:
+    image: ${DOCKER_REGISTRY-}smartenergyphysical
+    build:
+      context: .
+      dockerfile: SmartEnergyPhysical/Dockerfile
+    ports:
+      - "52000:50001"
+      - "44373:80"
+    depends_on:
+      - physical-db
+
+  smartenergyphysical-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "smartenergyphysical", "-app-port", "80" ]
+    depends_on:
+      - smartenergyphysical
+    network_mode: "service:smartenergyphysical"
+
+
+  smartenergydocuments:
+    image: ${DOCKER_REGISTRY-}smartenergydocuments
+    build:
+      context: .
+      dockerfile: SmartEnergyDocuments/Dockerfile
+    ports:
+      - "53000:50001"
+      - "44374:80"
+    depends_on:
+      - documents-db
+
+  documents-db:
+    image: mcr.microsoft.com/mssql/server
+    ports:
+      - "1403:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Your+password123"
+
+
+  smartenergydocuments-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "smartenergydocuments", "-app-port", "80" ]
+    depends_on:
+      - smartenergydocuments
+    network_mode: "service:smartenergydocuments"
