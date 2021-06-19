@@ -453,7 +453,7 @@ namespace SmartEnergy.Documents.Services
 
         public async Task<List<IncidentMapDisplayDto>> GetUnresolvedIncidentsForMapAsync()
         {
-            List<Incident> incidents = _dbContext.Incidents.Include(x => x.CrewID)//Crew?? Load it
+            List<Incident> incidents = _dbContext.Incidents
                                                            .Where(x => x.IncidentStatus == IncidentStatus.UNRESOLVED).ToList();
             List<IncidentMapDisplayDto> returnValue = new List<IncidentMapDisplayDto>();
 
@@ -561,7 +561,7 @@ namespace SmartEnergy.Documents.Services
                             affectedConsumers++;
                     }
                 }
-            } catch { return 0; }
+            } catch (Exception e) { return 0; }
 
 
             return affectedConsumers;

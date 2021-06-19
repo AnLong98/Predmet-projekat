@@ -52,11 +52,11 @@ namespace SmartEnergyDocuments
                options.TokenValidationParameters = new TokenValidationParameters
                {
                    ValidateIssuer = true,
-                   ValidateAudience = true,
+                   ValidateAudience = false,
                    ValidateLifetime = true,
                    ValidateIssuerSigningKey = true,
                    ValidIssuer = "http://localhost:44372",
-                   ValidAudience = "http://localhost:44372",
+                   //ValidAudience = ValidAudience,
                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]))
                };
            });

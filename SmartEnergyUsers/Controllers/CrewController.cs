@@ -52,7 +52,7 @@ namespace SmartEnergy.Users.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CrewDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetCrewByIdAsync(int id)
+        public async Task<IActionResult> GetCrewById(int id)
         {
             CrewDto crew = await _crewService.GetAsync(id);
             if (crew == null)
@@ -72,7 +72,7 @@ namespace SmartEnergy.Users.Controllers
             try
             {
                 CrewDto crew = await _crewService.InsertAsync(newCrew);
-                return CreatedAtAction(nameof(GetCrewByIdAsync), new { id = crew.ID }, crew);
+                return CreatedAtAction(nameof(GetCrewById), new { id = crew.ID }, crew);
             }
             catch (UserNotFoundException unf)
             {

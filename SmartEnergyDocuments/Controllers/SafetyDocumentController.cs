@@ -35,18 +35,20 @@ namespace SmartEnergy.Documents.Controllers
         [HttpGet("all")]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SafetyDocumentDto>))]
-        public IActionResult GetAllSafetyDocuments()
+        public async  Task<IActionResult> GetAllSafetyDocuments()
         {
-            return Ok(_safetyDocumentService.GetAllAsync());
+            var ret = await _safetyDocumentService.GetAllAsync();
+            return Ok(ret);
 
         }
 
         [HttpGet]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SafetyDocumentDto>))]
-        public IActionResult GetAllMineSafetyDocuments([FromQuery] OwnerFilter owner)
+        public async Task<IActionResult> GetAllMineSafetyDocuments([FromQuery] OwnerFilter owner)
         {
-            return Ok(_safetyDocumentService.GetAllMineSafetyDocumentsAsync(owner, User));
+            var ret = await _safetyDocumentService.GetAllMineSafetyDocumentsAsync(owner, User);
+            return Ok(ret);
 
         }
 
@@ -55,11 +57,12 @@ namespace SmartEnergy.Documents.Controllers
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DeviceDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetSafetyDocumentDevices(int id)
+        public async Task<IActionResult> GetSafetyDocumentDevicesAsync(int id)
         {
             try
             {
-                return Ok( _safetyDocumentService.GetSafetyDocumentDevicesAsync(id));
+                var ret = await _safetyDocumentService.GetSafetyDocumentDevicesAsync(id);
+                return Ok(ret);
 
             }
             catch (SafetyDocumentNotFoundException sfnf)
@@ -77,7 +80,7 @@ namespace SmartEnergy.Documents.Controllers
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SafetyDocumentDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetSafetyDocumentByIdAsync(int id)
+        public async Task<IActionResult> GetSafetyDocumentById(int id)
         {
             try
             {
@@ -132,7 +135,7 @@ namespace SmartEnergy.Documents.Controllers
             {
                 SafetyDocumentDto sf = await _safetyDocumentService.InsertAsync(newSafetyDocument);
 
-                return CreatedAtAction(nameof(GetSafetyDocumentByIdAsync), new { id = sf.ID }, sf);
+                return CreatedAtAction(nameof(GetSafetyDocumentById), new { id = sf.ID }, sf);
             }
             catch (WorkPlanNotFoundException wpnf)
             {
@@ -222,15 +225,19 @@ namespace SmartEnergy.Documents.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StateChangeHistoryDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetSafetyDocumentStateChanges(int id)
+        public async Task<IActionResult> GetSafetyDocumentStateChanges(int id)
         {
             try
             {
-                return Ok(_stateChangeService.GetSafetyDocumentStateHistoryAsync(id));
+                var ret = await _stateChangeService.GetSafetyDocumentStateHistoryAsync(id);
+                return Ok(ret);
             }
             catch (SafetyDocumentNotFoundException wnf)
             {
                 return NotFound(wnf.Message);
+            }catch (Exception e)
+            {
+                return BadRequest(e.Message);
             }
         }
 

@@ -34,7 +34,7 @@ namespace SmartEnergy.Documents.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResolutionDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetResolutionByIdAsync(int id)
+        public async Task<IActionResult> GetResolutionById(int id)
         {
             ResolutionDto resolution = await _resolutionService.GetAsync(id);
             if (resolution == null)
@@ -67,7 +67,7 @@ namespace SmartEnergy.Documents.Controllers
             try
             {
                 ResolutionDto resolution = await _resolutionService.InsertAsync(newResolution);
-                return CreatedAtAction(nameof(GetResolutionByIdAsync), new { id = resolution.ID }, resolution);
+                return CreatedAtAction(nameof(GetResolutionById), new { id = resolution.ID }, resolution);
             }
             catch (ResolutionNotFoundException resolutionNotFound)
             {

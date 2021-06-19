@@ -3,6 +3,9 @@ version: '3.4'
 services:
   antivirus:
     image: mkodockx/docker-clamav:alpine
+    ports:
+      - "3310:3310"
+
 
   smartenergyusers:
     image: ${DOCKER_REGISTRY-}smartenergyusers

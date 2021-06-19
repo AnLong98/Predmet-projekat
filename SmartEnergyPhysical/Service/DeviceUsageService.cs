@@ -196,7 +196,9 @@ namespace SmartEnergy.Physical.Service
 
         public List<DeviceDto> GetSafetyDocumentDevices(int sfID)
         {
-            List<DeviceUsage> devUsages = _dbContext.DeviceUsages.Include(x => x.Device).Where(x => x.SafetyDocumentID == sfID).ToList();
+            List<DeviceUsage> devUsages = _dbContext.DeviceUsages.Include(x => x.Device)
+                                                                 .ThenInclude(x => x.Location)
+                                                                 .Where(x => x.SafetyDocumentID == sfID).ToList();
             List<DeviceDto> devices = new List<DeviceDto>();
 
             foreach(var devUsage in devUsages)
@@ -210,7 +212,10 @@ namespace SmartEnergy.Physical.Service
 
         public List<DeviceDto> GetWorkRequestDevices(int wrID)
         {
-            List<DeviceUsage> devUsages = _dbContext.DeviceUsages.Include(x => x.Device).Where(x => x.WorkRequestID == wrID).ToList();
+            List<DeviceUsage> devUsages = _dbContext.DeviceUsages.Include(x => x.Device)
+                                                                 .ThenInclude(x => x.Location)
+                                                                 .Where(x => x.WorkRequestID == wrID)
+                                                                 .ToList();
             List<DeviceDto> devices = new List<DeviceDto>();
 
             foreach (var devUsage in devUsages)

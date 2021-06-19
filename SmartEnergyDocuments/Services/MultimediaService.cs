@@ -377,12 +377,12 @@ namespace SmartEnergy.Documents.Services
             formFile.OpenReadStream().CopyTo(ms);
             byte[] fileBytes = ms.ToArray();
 
-
+           
             ClamClient clam = new ClamClient(this._configuration["ClamAVServer:URL"],
                                         Convert.ToInt32(this._configuration["ClamAVServer:Port"]));
-            var scanResult = await clam.SendAndScanFileAsync(fileBytes);
-           if (scanResult.Result != ClamScanResults.Clean)
-                throw new MultimediaInfectedException($"This attachment is infected with virus!");
+           // var scanResult = await clam.SendAndScanFileAsync(fileBytes);
+           //if (scanResult.Result != ClamScanResults.Clean)
+               // throw new MultimediaInfectedException($"This attachment is infected with virus!");
         }
 
         private bool IsImage(IFormFile postedFile)

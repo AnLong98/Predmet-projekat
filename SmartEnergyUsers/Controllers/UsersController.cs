@@ -123,14 +123,12 @@ namespace SmartEnergy.Users.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+       // [Authorize]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetUserByIdAsync(int id)
+        public async Task<IActionResult> GetUserById(int id)
         {
-            if (_authHelperService.GetUserIDFromPrincipal(User) != id && User.IsInRole("CONSUMER"))
-                return Unauthorized("Consumer can only retreive his own information.");
             try
             {
                 UserDto user = (await _userService.GetAsync(id)).StripConfidentialData();
@@ -154,7 +152,7 @@ namespace SmartEnergy.Users.Controllers
             try
             {
                 UserDto user = (await _userService.InsertAsync(newUser)).StripConfidentialData();
-                return CreatedAtAction(nameof(GetUserByIdAsync), new { id = user.ID}, user);
+                return CreatedAtAction(nameof(GetUserById), new { id = user.ID}, user);
             }
             catch (CrewNotFoundException unf)
             {

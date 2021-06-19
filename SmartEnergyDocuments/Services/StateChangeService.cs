@@ -245,7 +245,7 @@ namespace SmartEnergy.Documents.Services
                     sch.FirstOrDefault(x => x.ID == history.ID).Name = user.Name;
                     sch.FirstOrDefault(x => x.ID == history.ID).LastName = user.Lastname;
                 }
-                catch
+                catch(Exception e)
                 {
                     throw new Exception("User info could not be retrieved for state change");
                 }
@@ -273,7 +273,7 @@ namespace SmartEnergy.Documents.Services
                     sch.FirstOrDefault(x => x.ID == history.ID).Name = user.Name;
                     sch.FirstOrDefault(x => x.ID == history.ID).LastName = user.Lastname;
                 }
-                catch
+                catch (Exception e)
                 {
                     throw new Exception("User info could not be retrieved for state change");
                 }

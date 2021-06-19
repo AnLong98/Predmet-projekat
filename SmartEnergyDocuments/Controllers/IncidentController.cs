@@ -97,16 +97,17 @@ namespace SmartEnergy.Documents.Controllers
         [HttpGet("unresolved")]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER, ADMIN, CONSUMER", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<IncidentMapDisplayDto>))]
-        public IActionResult GetUnresolvedIncidents()
+        public async Task<IActionResult> GetUnresolvedIncidents()
         {
-            return Ok(_incidentService.GetUnresolvedIncidentsForMapAsync());
+            var ret = await _incidentService.GetUnresolvedIncidentsForMapAsync();
+            return Ok(ret);
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER ", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IncidentDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
@@ -131,7 +132,7 @@ namespace SmartEnergy.Documents.Controllers
             {
                 IncidentDto newIncident = await _incidentService.InsertAsync(incident);
 
-                return CreatedAtAction(nameof(GetByIdAsync), new { id = newIncident.ID }, newIncident);
+                return CreatedAtAction(nameof(GetById), new { id = newIncident.ID }, newIncident);
             }
             catch (IncidentNotFoundException incidentNotFound)
             {
@@ -244,11 +245,12 @@ namespace SmartEnergy.Documents.Controllers
         [HttpGet("{incidentId}/crew")]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DeviceDto>))]
-        public IActionResult GetIncidentCrew(int incidentId)
+        public async Task<IActionResult> GetIncidentCrew(int incidentId)
         {
             try
             {
-                return Ok(_incidentService.GetIncidentCrewAsync(incidentId));
+                var ret = await _incidentService.GetIncidentCrewAsync(incidentId);
+                return Ok(ret);
             }
             catch (IncidentNotFoundException incidentNotFound)
             {
@@ -363,9 +365,10 @@ namespace SmartEnergy.Documents.Controllers
         [HttpGet("{incidentId}/calls")]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER ", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<IncidentDto>))]
-        public IActionResult GetIncidentCalls(int incidentId)
+        public async Task<IActionResult> GetIncidentCalls(int incidentId)
         {
-            return Ok(_incidentService.GetIncidentCallsAsync(incidentId));
+            var ret = await _incidentService.GetIncidentCallsAsync(incidentId);
+            return Ok(ret);
         }
 
 
@@ -375,11 +378,11 @@ namespace SmartEnergy.Documents.Controllers
        // [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult AddIncidentCall(int incidentId, CallDto newCall)
+        public async Task< IActionResult> AddIncidentCall(int incidentId, CallDto newCall)
         {
             try
             {
-                _incidentService.AddIncidentCallAsync(incidentId, newCall);
+                await _incidentService.AddIncidentCallAsync(incidentId, newCall);
 
                 return Ok();
             }
@@ -416,19 +419,21 @@ namespace SmartEnergy.Documents.Controllers
         [HttpGet("{incidentId}/calls-counter")]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER ", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
-        public IActionResult GetNumberOfIncidentCalls(int incidentId)
+        public async Task<IActionResult> GetNumberOfIncidentCalls(int incidentId)
         {
-            return Ok(_incidentService.GetNumberOfCallsAsync(incidentId));
+            var ret = await _incidentService.GetNumberOfCallsAsync(incidentId);
+            return Ok(ret);
         }
 
         [HttpGet("{incidentId}/affected-consumers")]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER ", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(int))]
-        public IActionResult GetNumberOfAffectedConsumers(int incidentId)
+        public async Task<IActionResult> GetNumberOfAffectedConsumers(int incidentId)
         {
             try
             {
-                return Ok(_incidentService.GetNumberOfAffectedConsumersAsync(incidentId));
+                var ret = await _incidentService.GetNumberOfAffectedConsumersAsync(incidentId);
+                return Ok(ret);
             }
             catch (IncidentNotFoundException incidentNotFound)
             {
@@ -440,11 +445,12 @@ namespace SmartEnergy.Documents.Controllers
         [HttpGet("{incidentId}/devices")]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER ", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DeviceDto>))]
-        public IActionResult GetIncidentDevices(int incidentId)
+        public async Task< IActionResult> GetIncidentDevices(int incidentId)
         {
             try
             {
-                return Ok(_incidentService.GetIncidentDevicesAsync(incidentId));
+                var ret = await _incidentService.GetIncidentDevicesAsync(incidentId);
+                return Ok(ret);
             }
             catch (IncidentNotFoundException incidentNotFound)
             {
@@ -460,11 +466,12 @@ namespace SmartEnergy.Documents.Controllers
         [HttpGet("{incidentId}/unrelated-devices")]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER ", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DeviceDto>))]
-        public IActionResult GetUnrelatedDevices(int incidentId)
+        public async Task<IActionResult> GetUnrelatedDevices(int incidentId)
         {
             try
             {
-                return Ok(_incidentService.GetUnrelatedDevicesAsync(incidentId));
+                var ret = await _incidentService.GetUnrelatedDevicesAsync(incidentId);
+                return Ok(ret);
             }
             catch (IncidentNotFoundException incidentNotFound)
             {

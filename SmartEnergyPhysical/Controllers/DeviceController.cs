@@ -69,7 +69,7 @@ namespace SmartEnergyAPI.Controllers
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER, WORKER, ADMIN", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DeviceDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetDeviceByIdAsync(int id)
+        public async Task<IActionResult> GetDeviceById(int id)
         {
             DeviceDto device = await _deviceService.GetAsync(id);
             if (device == null)
@@ -89,7 +89,7 @@ namespace SmartEnergyAPI.Controllers
             try
             {
                 DeviceDto device = await _deviceService.InsertAsync(newDevice);
-                return CreatedAtAction(nameof(GetDeviceByIdAsync), new { id = device.ID }, device);
+                return CreatedAtAction(nameof(GetDeviceById), new { id = device.ID }, device);
             }
             catch (InvalidDeviceException invalidDevice)
             {

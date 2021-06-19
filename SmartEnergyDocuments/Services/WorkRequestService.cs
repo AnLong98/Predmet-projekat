@@ -101,7 +101,7 @@ namespace SmartEnergy.Documents.Services
                 var ret = await _daprClient.InvokeMethodAsync<List<DeviceDto>>(HttpMethod.Get, "smartenergyphysical", $"/api/devices/work-request/{workRequestId}");
                 return ret;
             }
-            catch
+            catch(Exception e)
             {
                 return null;
             }

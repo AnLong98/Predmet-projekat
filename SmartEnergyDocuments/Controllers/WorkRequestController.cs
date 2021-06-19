@@ -63,7 +63,7 @@ namespace SmartEnergy.Documents.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WorkRequestDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
@@ -92,11 +92,12 @@ namespace SmartEnergy.Documents.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DeviceDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetWorkRequestDevices(int id)
+        public async Task<IActionResult> GetWorkRequestDevicesAsync(int id)
         {
             try
             {
-                return Ok(_workRequestService.GetWorkRequestDevicesAsync(id));
+                var ret = await _workRequestService.GetWorkRequestDevicesAsync(id);
+                return Ok(ret);
             }
             catch (WorkRequestNotFound wnf)
             {
@@ -115,7 +116,7 @@ namespace SmartEnergy.Documents.Controllers
             try
             {
                 WorkRequestDto newWorkRequest = await _workRequestService.InsertAsync(workRequest);
-                return CreatedAtAction(nameof(GetByIdAsync), new { id = newWorkRequest.ID}, newWorkRequest);
+                return CreatedAtAction(nameof(GetById), new { id = newWorkRequest.ID}, newWorkRequest);
             }
             catch (IncidentNotFoundException wnf)
             {
@@ -279,11 +280,15 @@ namespace SmartEnergy.Documents.Controllers
                 if (User.IsInRole("CREW_MEMBER") &&
                await _workRequestService.IsCrewMemberHandlingWorkRequestAsync(_authHelperService.GetUserIDFromPrincipal(User), id))
                     return Unauthorized("Only crew members assigned to work request are allowed to edit it.");
-                return Ok(_stateChangeService.GetWorkRequestStateHistoryAsync(id));
+                var ret = await _stateChangeService.GetWorkRequestStateHistoryAsync(id);
+                return Ok(ret);
             }
             catch (WorkRequestNotFound wnf)
             {
                 return NotFound(wnf.Message);
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
             }
         }
 
