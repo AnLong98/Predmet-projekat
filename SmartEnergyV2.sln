@@ -13,27 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartEnergyPhysical", "Smar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartEnergyDocuments", "SmartEnergyDocuments\SmartEnergyDocuments.csproj", "{06926F23-2FDC-46A1-86F1-A44EB5840870}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "power-system-web-app(2)", "..\..\..\Downloads\PUSGS_2020-pedja_predmet_projekat\power-system-web-app\", "{056AF440-5555-4554-B8A8-94E191B04BD4}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_52748"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\..\Downloads\PUSGS_2020-pedja_predmet_projekat\power-system-web-app\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_52748\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_52748"
-		Release.AspNetCompiler.PhysicalPath = "..\..\..\Downloads\PUSGS_2020-pedja_predmet_projekat\power-system-web-app\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_52748\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "52748"
-		SlnRelativePath = "..\..\..\Downloads\PUSGS_2020-pedja_predmet_projekat\power-system-web-app\"
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,10 +39,6 @@ Global
 		{06926F23-2FDC-46A1-86F1-A44EB5840870}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06926F23-2FDC-46A1-86F1-A44EB5840870}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06926F23-2FDC-46A1-86F1-A44EB5840870}.Release|Any CPU.Build.0 = Release|Any CPU
-		{056AF440-5555-4554-B8A8-94E191B04BD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{056AF440-5555-4554-B8A8-94E191B04BD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{056AF440-5555-4554-B8A8-94E191B04BD4}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{056AF440-5555-4554-B8A8-94E191B04BD4}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
