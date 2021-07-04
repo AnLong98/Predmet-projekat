@@ -1,4 +1,5 @@
 ﻿using Dapr;
+using Dapr.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ using SmartEnergyContracts.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace SmartEnergy.Documents.Controllers
@@ -29,12 +31,17 @@ namespace SmartEnergy.Documents.Controllers
         private readonly IIncidentService _incidentService;
         private readonly IMultimediaService _multimediaService;
         private readonly IAuthHelperService _authHelperService;
+        private readonly ICallService _callService;
+        private readonly DaprClient _daprClient;
 
-        public IncidentController(IIncidentService incidentService, IMultimediaService multimediaService, IAuthHelperService authHelperService)
+        public IncidentController(IIncidentService incidentService, IMultimediaService multimediaService,
+            IAuthHelperService authHelperService, ICallService callService, DaprClient daprClient)
         {
             _incidentService = incidentService;
             _multimediaService = multimediaService;
             _authHelperService = authHelperService;
+            _callService = callService;
+            _daprClient = daprClient;
         }
 
         [HttpGet("{id}/location")]
@@ -190,9 +197,10 @@ namespace SmartEnergy.Documents.Controllers
             }
         }
 
+        
         [Topic("testsub", "testtopic")]
-        [HttpPost("testdaprpubsub")]
-        public async Task<IActionResult> ProcessTopic( SomeEvent ev)
+        [HttpPost("testtopic")]
+        public async Task<IActionResult> ProcessTopic(SomeEvent ev)
         {
             var ret = await _incidentService.GetUnresolvedIncidentsForMapAsync();
             return Ok(ret);
@@ -301,18 +309,30 @@ namespace SmartEnergy.Documents.Controllers
             }
         }
 
+        [HttpPost("add-device-revert")]
+        [Topic("testsub", "AddDeviceToIncident")]
+        private async Task<IActionResult> RevertAddDeviceToIncident(ReverseAddDeviceToIncidentEvent ev)
+        {
+            await _callService.RemoveCallsFromIncident(ev.IncidentID);
+            await _incidentService.RevertIncidentToInitialState(ev.IncidentID);
+            return Ok();
+        }
+
         
         [HttpPost("{incidentId}/device/{deviceId}")]
         [Authorize(Roles = "CREW_MEMBER, DISPATCHER ", Policy = "ApprovedOnly")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult AddDeviceToIncident(int incidentId, int deviceId)
+        public async  Task<IActionResult> AddDeviceToIncident(int incidentId, int deviceId)
         {
             try
             {
-                _incidentService.AddDeviceToIncidentAsync(incidentId, deviceId);
-               
+                var request = _daprClient.CreateInvokeMethodRequest<DeviceUsageDto>("smartenergyphysical",
+                $"/api/devices/device-usage", new DeviceUsageDto { IncidentID = incidentId, DeviceID = deviceId });
+
+                await _incidentService.AddDeviceToIncidentAsync(incidentId, deviceId);
+                await _daprClient.InvokeMethodAsync(request);
                 return Ok();
             }
             catch (IncidentNotFoundException incidentNotFound)
@@ -335,6 +355,17 @@ namespace SmartEnergy.Documents.Controllers
             {
                 return BadRequest(invalidDevice.Message);
             }
+            catch(Exception ex)
+            {
+                var eventr = new ReverseAddDeviceToIncidentEvent()
+                { 
+                    DeviceID = deviceId,
+                    IncidentID = incidentId
+                };
+
+                await _daprClient.PublishEventAsync<ReverseAddDeviceToIncidentEvent>("testsub", "AddDeviceToIncident", eventr);
+                return StatusCode(500);
+            }
 
 
             
@@ -346,12 +377,13 @@ namespace SmartEnergy.Documents.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult RemoveDeviceFromIncindet(int incidentId, int deviceId)
+        public async Task<IActionResult> RemoveDeviceFromIncindet(int incidentId, int deviceId)
         {
             try
             {
+               
                 _incidentService.RemoveDeviceFromIncindet(incidentId, deviceId);
-
+               
                 return Ok();
             }
             catch (IncidentNotFoundException incidentNotFound)
@@ -366,6 +398,7 @@ namespace SmartEnergy.Documents.Controllers
             {
                 return NotFound(invalidDeviceUsage.Message);
             }
+            
 
 
         }

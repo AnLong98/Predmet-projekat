@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapr;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ using SmartEnergy.Contract.CustomExceptions.WorkRequest;
 using SmartEnergy.Contract.DTO;
 using SmartEnergy.Contract.Enums;
 using SmartEnergy.Contract.Interfaces;
+using SmartEnergyContracts.Events;
 
 namespace SmartEnergyAPI.Controllers
 {
@@ -29,6 +31,14 @@ namespace SmartEnergyAPI.Controllers
         {
             _deviceService = deviceService;
             _deviceUsageService = deviceUsageService;
+        }
+
+        [HttpPost("add-device-revert")]
+        [Topic("testsub", "AddDeviceToIncident")]
+        private async Task<IActionResult> RevertAddDeviceToIncident(ReverseAddDeviceToIncidentEvent ev)
+        {
+            _deviceUsageService.RemoveDeviceFromIncident(ev.IncidentID, ev.DeviceID);
+            return Ok();
         }
 
         [HttpGet("all")]

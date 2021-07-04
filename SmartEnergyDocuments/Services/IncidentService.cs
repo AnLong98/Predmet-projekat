@@ -351,9 +351,9 @@ namespace SmartEnergy.Documents.Services
             return _mapper.Map<List<IncidentDto>>(unassignedIcidents);
         }
 
-        public async void AddDeviceToIncidentAsync(int incidentId, int deviceId)
+        public async Task AddDeviceToIncidentAsync(int incidentId, int deviceId)
         {
-
+            //_daprClient.
             Incident incident = _dbContext.Incidents.FirstOrDefault(x => x.ID == incidentId);
 
             if (incident == null)
@@ -393,28 +393,20 @@ namespace SmartEnergy.Documents.Services
                 if(CompareLocation(callLocation, device.Location))
                 {
                     c.IncidentID = incidentId;
-                    await _callService.UpdateAsync(_mapper.Map<CallDto>(c));
+                    await _callService.UpdateAsync(_mapper.Map<CallDto>(c));//Reverse this if transaction fails
                 }
 
             }
-
-
-            /*
-            if (incident.IncidentDevices.Find(x => x.DeviceID == deviceId) != null)
-                throw new InvalidDeviceUsageException($"Device with id = {deviceId} is already added to incident!");
-            */
-
-            var request = _daprClient.CreateInvokeMethodRequest<DeviceUsageDto>("smartenergyphysical", $"/api/devices/device-usage", new DeviceUsageDto { IncidentID = incidentId, DeviceID = deviceId });
-            await _daprClient.InvokeMethodWithResponseAsync(request);
 
             incident.Priority = await GetIncidentPriorityAsync(incident.ID);
             
             if(incident.IncidentStatus == IncidentStatus.INITIAL)
                 incident.IncidentStatus = IncidentStatus.UNRESOLVED;
 
-
+             
             _dbContext.SaveChanges();
 
+            return;
         }
 
         public IncidentDto RemoveCrewFromIncidet(int incidentId)
@@ -437,7 +429,8 @@ namespace SmartEnergy.Documents.Services
                                                    .FirstOrDefault(x => x.ID == incidentId);
             if (incident == null)
                 throw new IncidentNotFoundException($"Incident with id {incidentId} does not exist.");
-            List<DeviceDto> incDevices = await _daprClient.InvokeMethodAsync<List<DeviceDto>>(HttpMethod.Get, "smartenergyphysical", $"/api/devices/incident/{incidentId}");
+            List<DeviceDto> incDevices = await _daprClient.InvokeMethodAsync<List<DeviceDto>>(HttpMethod.Get, "smartenergyphysical", 
+                $"/api/devices/incident/{incidentId}");
             DeviceDto device = incDevices.Find(x => x.ID == deviceId);
 
             if (device == null)
@@ -935,6 +928,17 @@ namespace SmartEnergy.Documents.Services
 
             return statistics;
 
+        }
+
+        public async Task RevertIncidentToInitialState(int incidentID)
+        {
+            Incident incident = _dbContext.Incidents.Find(incidentID);
+
+            incident.IncidentStatus = IncidentStatus.INITIAL;
+            incident.Priority = 0;
+
+            _dbContext.SaveChanges();
+            return;
         }
     }
 }

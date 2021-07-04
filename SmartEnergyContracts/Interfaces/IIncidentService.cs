@@ -10,6 +10,8 @@ namespace SmartEnergy.Contract.Interfaces
 {
     public interface IIncidentService : IGenericService<IncidentDto>
     {
+        Task RevertIncidentToInitialState(int incidentID);
+
         Task<LocationDto> GetIncidentLocationAsync(int incidentId);
 
         Task<IncidentDto> AddCrewToIncidentAsync(int incidentId, int crewId);
@@ -18,7 +20,7 @@ namespace SmartEnergy.Contract.Interfaces
 
         List<IncidentDto> GetUnassignedIncidents();
 
-        void AddDeviceToIncidentAsync(int incidentId, int deviceId);
+        Task AddDeviceToIncidentAsync(int incidentId, int deviceId);
 
         void RemoveDeviceFromIncindet(int incidentId, int deviceId);
         Task<List<IncidentMapDisplayDto>> GetUnresolvedIncidentsForMapAsync();

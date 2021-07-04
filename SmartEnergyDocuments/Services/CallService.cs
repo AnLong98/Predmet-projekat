@@ -137,5 +137,18 @@ namespace SmartEnergy.Documents.Services
 
             return _mapper.Map<CallDto>(oldCall);
         }
+
+        public async  Task RemoveCallsFromIncident(int incidentID)
+        {
+            List<Call> incidentCalls = _dbContext.Calls.Where(x => x.IncidentID == incidentID).ToList();
+
+            foreach(Call c in incidentCalls)
+            {
+                c.IncidentID = null;
+            }
+
+            _dbContext.SaveChanges();
+            return;
+        }
     }
 }
