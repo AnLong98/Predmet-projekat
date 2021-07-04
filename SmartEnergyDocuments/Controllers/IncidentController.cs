@@ -202,8 +202,7 @@ namespace SmartEnergy.Documents.Controllers
         [HttpPost("testtopic")]
         public async Task<IActionResult> ProcessTopic(SomeEvent ev)
         {
-            var ret = await _incidentService.GetUnresolvedIncidentsForMapAsync();
-            return Ok(ret);
+            return Ok();
         }
 
 
