@@ -133,15 +133,19 @@ namespace SmartEnergyUsers
                 c.SwaggerEndpoint("v1/swagger.json", "Smart Energy Users API v1");
             });
 
+            app.UseCloudEvents();
+
+
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapSubscribeHandler();
                 endpoints.MapControllers();
             });
 
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 bool migrated = false;
-                int attempts = 3;
+                int attempts = 10;
                 while (!migrated && attempts > 0)
                 {
                     try
@@ -151,7 +155,7 @@ namespace SmartEnergyUsers
                         InitDb(context);
                         migrated = true;
                     }
-                    catch //Catch if too soon initing
+                    catch(Exception ex) //Catch if too soon initing
                     {
                         attempts--;
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Dapr;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -13,6 +14,7 @@ using SmartEnergy.Contract.CustomExceptions.Multimedia;
 using SmartEnergy.Contract.DTO;
 using SmartEnergy.Contract.Enums;
 using SmartEnergy.Contract.Interfaces;
+using SmartEnergyContracts.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -186,6 +188,14 @@ namespace SmartEnergy.Documents.Controllers
             {
                 return NotFound(incidentNotFound.Message);
             }
+        }
+
+        [Topic("testsub", "testtopic")]
+        [HttpPost("testdaprpubsub")]
+        public async Task<IActionResult> ProcessTopic( SomeEvent ev)
+        {
+            var ret = await _incidentService.GetUnresolvedIncidentsForMapAsync();
+            return Ok(ret);
         }
 
 

@@ -6,6 +6,13 @@ services:
     ports:
       - "3310:3310"
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+
 
   smartenergyusers:
     image: ${DOCKER_REGISTRY-}smartenergyusers
@@ -13,10 +20,11 @@ services:
       context: .
       dockerfile: SmartEnergyUsers/Dockerfile
     ports:
-      - "51000:50001"
+      - "54000:50001"
       - "44372:80"
     depends_on:
       - users-db
+
 
   users-db:
     image: mcr.microsoft.com/mssql/server
@@ -26,6 +34,7 @@ services:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "Your+password123"
 
+
   physical-db:
     image: mcr.microsoft.com/mssql/server
     ports:
@@ -34,11 +43,14 @@ services:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "Your+password123"
 
+
   smartenergyusers-dapr:
     image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "smartenergyusers", "-app-port", "80" ]
+    command: [ "./daprd", "-app-id", "smartenergyusers", "-app-port", "80", "-components-path", "/components" ]
     depends_on:
       - smartenergyusers
+    volumes:
+      - "./components/:/components"
     network_mode: "service:smartenergyusers"
 
   smartenergyphysical:
@@ -54,9 +66,11 @@ services:
 
   smartenergyphysical-dapr:
     image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "smartenergyphysical", "-app-port", "80" ]
+    command: [ "./daprd", "-app-id", "smartenergyphysical", "-app-port", "80", "-components-path", "/components" ]
     depends_on:
       - smartenergyphysical
+    volumes:
+      - "./components/:/components"
     network_mode: "service:smartenergyphysical"
 
 
@@ -71,6 +85,7 @@ services:
     depends_on:
       - documents-db
 
+
   documents-db:
     image: mcr.microsoft.com/mssql/server
     ports:
@@ -80,9 +95,12 @@ services:
       SA_PASSWORD: "Your+password123"
 
 
+
   smartenergydocuments-dapr:
     image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "smartenergydocuments", "-app-port", "80" ]
+    command: [ "./daprd", "-app-id", "smartenergydocuments", "-app-port", "80", "-components-path", "/components" ]
     depends_on:
       - smartenergydocuments
     network_mode: "service:smartenergydocuments"
+    volumes:
+      - "./components/:/components"

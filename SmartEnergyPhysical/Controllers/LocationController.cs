@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NServiceBus;
 using SmartEnergy.Contract.DTO;
 using SmartEnergy.Contract.Interfaces;
+using SmartEnergyContracts.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,7 @@ namespace SmartEnergyAPI.Controllers
         {
             _locationService = locationService;
         }
+
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<LocationDto>))]

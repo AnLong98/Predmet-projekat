@@ -7,6 +7,8 @@ using System.Linq;
 using AutoMapper;
 using SmartEnergy.Physical.Infrastructure;
 using System.Threading.Tasks;
+using Dapr.Client;
+using SmartEnergyContracts.Events;
 
 namespace SmartEnergy.Physical.Service
 {
@@ -14,15 +16,18 @@ namespace SmartEnergy.Physical.Service
     {
         private readonly PhysicalDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly DaprClient _dapr;
 
-        public LocationService(PhysicalDbContext dbContext, IMapper mapper)
+        public LocationService(PhysicalDbContext dbContext, IMapper mapper, DaprClient dapr)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _dapr = dapr;
         }
 
         public List<LocationDto> GetAllLocations()
         {
+            _dapr.PublishEventAsync<SomeEvent>("testsub", "testtopic", new SomeEvent());
             return _mapper.Map<List<LocationDto>>(_dbContext.Location.ToList());
         }
 

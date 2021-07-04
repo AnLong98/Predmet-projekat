@@ -23,6 +23,7 @@ namespace SmartEnergyDocuments.Controllers
             _multimediaService = multimediaService;
         }
 
+        
         [HttpPost("users/{id}/avatar")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
